@@ -1,0 +1,1 @@
+{"name":"个人资产","short_name":"资产","description":"跨设备个人资产总览、持仓和 AI 更新包","start_url":"./","scope":"./","display":"standalone","background_color":"#f5f7fa","theme_color":"#f5f7fa","icons":[{"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]}
