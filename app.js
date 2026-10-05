@@ -17612,7 +17612,6 @@ ${serverError}`);
     });
   });
   (async () => {
-    history.replaceState(route, "", "#home");
     await ledger.load();
     ledger.subscribe(render);
     try {
@@ -17622,6 +17621,7 @@ ${serverError}`);
       syncMessage = "OneDrive \u6682\u672A\u540C\u6B65";
       toast(error.message);
     }
+    history.replaceState(route, "", "#home");
     render();
   })();
 })();
