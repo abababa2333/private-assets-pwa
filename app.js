@@ -13,7 +13,8 @@
   var require_core = __commonJS({
     "asset-plugin/src/core.js"(exports, module) {
       "use strict";
-      var SCALE = 100000000n;
+      var DECIMAL_PLACES = 18;
+      var SCALE = 10n ** BigInt(DECIMAL_PLACES);
       var CURRENCIES = ["CNY", "HKD", "USD", "SGD", "EUR", "GBP", "JPY", "AUD", "CAD", "CHF"];
       var CATEGORIES = { cash: "\u73B0\u91D1", deposit: "\u5B9A\u671F\u5B58\u6B3E", stock: "\u80A1\u7968 / ETF", fund: "\u57FA\u91D1", crypto: "\u52A0\u5BC6\u8D44\u4EA7", other: "\u5176\u4ED6\u8D44\u4EA7", debt: "\u8D1F\u503A" };
       function assert(ok, message) {
@@ -22,14 +23,14 @@
       function decimal(v) {
         assert(typeof v === "string" || typeof v === "number", "\u91D1\u989D\u5FC5\u987B\u4E3A\u6570\u5B57\u6216\u5341\u8FDB\u5236\u6587\u672C");
         const s = String(v).trim();
-        assert(/^-?\d{1,13}(\.\d{1,8})?$/.test(s), "\u91D1\u989D\u683C\u5F0F\u65E0\u6548\uFF1A\u6700\u591A 8 \u4F4D\u5C0F\u6570\uFF0C\u4E0D\u63A5\u53D7\u79D1\u5B66\u8BA1\u6570\u6CD5\u6216\u5343\u4F4D\u9017\u53F7");
+        assert(/^-?\d{1,13}(\.\d{1,18})?$/.test(s), "\u91D1\u989D\u683C\u5F0F\u65E0\u6548\uFF1A\u6700\u591A 18 \u4F4D\u5C0F\u6570\uFF0C\u4E0D\u63A5\u53D7\u79D1\u5B66\u8BA1\u6570\u6CD5\u6216\u5343\u4F4D\u9017\u53F7");
         const neg = s[0] === "-", a = (neg ? s.slice(1) : s).split(".");
-        return (BigInt(a[0]) * SCALE + BigInt((a[1] || "").padEnd(8, "0"))) * (neg ? -1n : 1n);
+        return (BigInt(a[0]) * SCALE + BigInt((a[1] || "").padEnd(DECIMAL_PLACES, "0"))) * (neg ? -1n : 1n);
       }
       function dec(n) {
         const sign = n < 0n ? "-" : "";
         const v = n < 0n ? -n : n;
-        return sign + String(v / SCALE) + (v % SCALE ? "." + String(v % SCALE).padStart(8, "0").replace(/0+$/, "") : "");
+        return sign + String(v / SCALE) + (v % SCALE ? "." + String(v % SCALE).padStart(DECIMAL_PLACES, "0").replace(/0+$/, "") : "");
       }
       function divide(a, b) {
         assert(b !== 0n, "\u4E0D\u80FD\u9664\u4EE5\u96F6");
@@ -39,7 +40,7 @@
       var mul = (a, b) => divide(a * b, SCALE);
       function money(n) {
         if (n === null) return "\u5F85\u6298\u7B97";
-        const cents = divide(n, 1000000n), a = cents < 0n ? -cents : cents;
+        const cents = divide(n, SCALE / 100n), a = cents < 0n ? -cents : cents;
         return (cents < 0n ? "-" : "") + String(a / 100n).replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "." + String(a % 100n).padStart(2, "0");
       }
       function date(s) {
